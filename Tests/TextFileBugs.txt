@@ -1,0 +1,129 @@
+﻿
+TestAddBook.cs File 
+
+Bug 1;
+In Method: AddBook_AllFields_ShouldPass
+AuthorProperty value in the response is null, but shoud be Ivan Vazov
+var book = new Book(currentId, "Ivan Vazov", "Pod Igoto", "Hard time for BG People"); 
+We compare obj book with the response. The response Author is null, whick is bug.
+
+Bug 2:
+ Is AuthorProperty is it Required ? (yes according to the ErrorMessage)
+ When we pass AuthorProperty the value "", null, White space
+ The response Error is:
+ Message:
+ String lengths are both 61.Strings differ at index 50.
+ Expected: "Book.Author is a required field.\r\nParameter name: Book.Author"
+ But was: "Book.Author is a required field.\r\nParameter name: book.Author"
+ book.Author in the message should me with Capital "B"
+ When AuthorProperty is 31Symbols test passes, becasue validation works.
+
+Bug 3 :
+in Method :public void AddABook_InvalidAuthor_ShouldFail
+here we set negative or Empty Author and it is registered ie, we receive response with payload and HttpStatusCode "OK" and no Error.
+It should be Error in the response, and empty payload and HttpStatusCode "BadRequest".
+We can not enter Book with Invalid Author(empty Author, Author more than 30Symbols....);
+
+Bug 4:
+ In Method : public void AddBook_ValidAuthor_ShouldPass
+
+ Entering book with Author 30 Symbols length should be allowed according to the requirements.
+ In practice the responseObject has Error, ErrorMessage ->Book.Author should not exceed 30 characters!, 
+ the payload is Empty, the Response HttpStatuscode is BadRequest, object book is not present into the response- which is all wrong.
+ It should be Error is Empty, payload is full, and HttpStatusCode is "OK". Object book should be present into the Response.
+ Entering a book with Author Length 1 Symbol. Into the Response the Author is with nullValue, 
+ it should be Author with Value "I";
+
+
+Bug 5 : 
+In Method : public void AddBook_ValidTitle_ShouldPass
+Adding book with Title length 100 chars is possible accroding to the requirements. 
+  The Response with Title length is 100 Chars is not added, which is not correct.
+  There is Error, Error Message (Adding book failed, Book.Title should not exceed 100 characters!),
+  HttpStatusCode is "BadRequest" which not correct.
+  Book with Title Lenght 100 should be possible present/added into the Response, HttpStatuscode should be "OK". 
+  Error must be null.
+
+ Question : Is it allowed id Value to be changed ? (no). Is it Required (Yes)
+
+/////////////////
+
+TestUpdateBook.cs FILE 
+
+Bug 6:
+In the method : UpdateBook_AuthorContains31Symbols_ShouldFail -> the ErrorMessage: 
+log as a probable Bug : ....book.Author, book needs to be with capital B (Book.Author)
+            Message:
+            String lengths are both 61.Strings differ at index 50.
+            Expected: "Book.Author is a required field.\r\nParameter name: Book.Author"
+            But was:  "Book.Author is a required field.\r\nParameter name: book.Author"
+
+Bug 7:
+ In Method: public void UpdateBook_AuthorContainsExactly30Symbols_ShouldPass
+
+ when i pass 30 characters long Author, throws Error with ErrorMessage,
+ that Authour should not exeed 30 characters, which is not correct behaviour. 
+ It should not throw Error.  
+ By requirements Author validation should not throw Error if Author length is not longer than 30 symbols. 
+ It means thatv if length is 31 Symbols it throws an Error.
+ Validation for 30 chars is not correctly working here.
+
+             UpdateBook_AuthorContainsExactly30Symbols_ShouldPass("Ivan VazovIvan VazovIvan Vazov")
+             Message: 
+             Expected: null
+             But was:  <LibraryManagerTests.Models.Error>
+
+Bug 8:
+ in Method : UpdateBook_TitleContains100Symbols_ShouldPass
+ Validation for Title length of 100 symbols throws an Error and ErrorMessage, but it should not, becasue by
+ requirements  if Title is not longer than 100  symbols it is ok. 
+ If we pass Title length with 101 Symbols and more it should throw an Error.
+
+  UpdateBook_TitleContains100Symbols_ShouldPass(
+ "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1")
+
+  Message: 
+      Expected: null
+      But was:  <LibraryManagerTests.Models.Error>
+
+Bug 9:
+ in Method : public void UpdateBook_InvalidId_ShouldFail(int invalidId)
+"Book.Id should be a positive integer!\r\nParameter name: book.Id";  
+ for consistency : book.Id book must be in the error Message with Capital "B";
+
+Bug 10:
+ In Method public void UpdateBook_AllFieldsInvalid_ShouldFail
+ There is no Id with value = 2 and updatedAuthor31CharsLength contains 31chars that is invalid 
+ there is not ErrorMesage thrown for Book with Id = 2 and Author with length 31 Chars.
+ There is only an ErrorMessage thrown for property UpdatedTitle101CharsLength which is 101 (invalid) characters.
+ Is it ok from 3 Properies with invalid values to throw an ErrorMessage only for one of them 
+ (UpdatedTitle101CharsLength) and for the other not ?.
+ description field is correct -> there is no litmitations for it
+
+Bug 11:
+  Method: UpdateBook_EmptyDescription_ShouldPass 
+  Message: 
+  Expected string length 59 but was 58. Strings differ at index 30.
+  Expected: "Book.Title is a required field.\r\nParameter name: Book.Title"
+  But was:  "Book.Title is a required field\r\nParameter name: Book.Title"
+  -----------------------------------------^ // There should be a "."  at the end of this sentence
+  ("Book.Title is a required field)
+  for consistenscy with the other 
+  Required field Error messages
+
+ Bug 12 :
+ In Method : AddABook_NoDescriptionOrWhiteSpace_ShouldPass
+  
+  In the Document there is no limitation of the Description fieled length. 
+  Would not it better we to have some field length limitation here?
+
+Bug 13:
+In Method : AddBook_AllFieldsInvalid_ShouldFail
+
+ From the 3 Book Properies it throws Error only on invalid Title Length -> InvalidTitle101CharsLength, 
+ Would it be better to throw error for the invalid Id, and Invalid Author ?
+ for Descripion we dont have limitations but we should 
+
+           
+ 
+
