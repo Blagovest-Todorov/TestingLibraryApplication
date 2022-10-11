@@ -124,6 +124,7 @@ In Method : AddBook_AllFieldsInvalid_ShouldFail
  Would it be better to throw error for the invalid Id, and Invalid Author ?
  for Descripion we dont have limitations but we should 
 
-           
+ Questions: Adding a book with same Id/Author/Title/Description what is the expected behaviour, is it allowed?
+ 
  
 

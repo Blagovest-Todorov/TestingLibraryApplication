@@ -27,7 +27,8 @@ namespace LibraryManagerTests.Tests
         protected const string ValidAuthor30CharsLength = "Ivan VazovIvan VazovIvan Vazov";
         protected const string InvalidTitle101CharsLength = "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12";
         protected const string ValidTitle100CharsLength = "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1";
-        protected const string ValidTitle1CharsLength = "P";       
+        protected const string ValidTitle1CharsLength = "P";
+        protected const string ValidDeleteError = "Book with id {1} not found!";
 
         public BaseTest()
         {

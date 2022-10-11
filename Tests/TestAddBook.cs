@@ -148,5 +148,11 @@ namespace LibraryManagerTests.Tests
            // AssertFailingResponse(createdBookResponse, InvalidAuthor31CharsLength, HttpStatusCode.BadRequest);
 
         }
+
+        [Test]
+        public void AddBook_SameAuthorTwice_ShouldPassORFail() 
+        {
+          // TODO ? //SameTitleTwice? //SameDescriptionTwice?
+        }
     }
 }
