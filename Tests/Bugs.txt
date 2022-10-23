@@ -1,0 +1,147 @@
+﻿
+Bugs 
+
+TestAddBook.cs File 
+Adding a book functionality.
+
+
+Bug1 -  NullAuthorPropertyValueInResponseWhenBookAuthourIsAdded. 
+
+Step 1. Navigate to URL Page http://localhost:9000/api/books where we can add book.
+Step 2. Fill book properties (Id = 1, Author = "TestAuthor", Title = "TestTitle1", Description = "TestDescription"),
+        and when we check in the response the book property Auhtor, Author has null value,  but it should has
+        a value = "TestAuthor", that represents a probable bug.
+                      Expected value of Author is : "TestAuthor"
+                      Actual value is : null;
+
+
+Bug2 - NoLimitationForTheLengthOfDescriptionField - In the Requirements there is no limitation of length 
+       about the Description field. Would it be better we to have some field length limitation here ? 
+       This could be a probable requirement bug.
+
+        
+Bug3 - UnexpectedMessageAppearsWhenEnteringAuthorFieldWithLength30Chars. 
+Step1. Navigate to URL Page http://localhost:9000/api/books where we can add book.
+Step2. Fill book properties (Id = 1, Author = "TestAuthorTestAuthorTestAuthor" :(exactly 30 chars),
+       Title = "TestTitle1", Description = "TestDescription") the Author's length is allowed to be 30 chars, 
+       according to the requirements and then unexpected message appears: 
+                                      "Book.Author should not exceed 30 characters!\r\nParameter name: Book.Author"; 
+       Expected: Author length 30 chars should be added/present in the response and no error message should appear. 
+       Actual: Author with length 30 chars is not added/present in the response and an error message appears.
+                                     "Book.Author should not exceed 30 characters!\r\nParameter name: Book.Author"; 
+                                     That is not correct accordint to the requirements, where 30 chars is allowed.
+
+
+Bug4   InconsistentErrorMessgeForBookAuthorAppearing
+Step1. Navigate to URL Page http://localhost:9000/api/books where we can add book.
+Step2. When fill the AuthorProperty with the value "", null, White space
+       The response Error Message is:      
+                             String lengths are both 61.Strings differ at index 50.
+          Expected: "Book.Author is a required field.\r\nParameter name: Book.Author"
+           But was: "Book.Author is a required field.\r\nParameter name: book.Author"
+          book.Author in the message should me with Capital "B" like(Book.Author) and probably there should be "!" 
+          instead of "." symbol after the required field for consistency witht the other error messages.
+       
+Bug5   AddingBookTitleWithLength100CharsIsNotPossible. 
+Step1. Navigate to URL Page http://localhost:9000/api/books where we can add book.
+Step2. When we enter a book with title length 100chars it appears to be an invalid action.
+       The book title is not added/present and the response and the response gives an Error Message :
+       (Adding book failed, Book.Title should not exceed 100 characters!) which not correct according to requirements. 
+       Payload is null, Bad request.
+       
+       Expected: According to the requirements a Book with Title length 100 chars should be added and present into 
+       the Response, HttpStatuscode should be "OK" and Error must be null (No error message should appear in response).
+       Actual: Error message appears : Adding book failed, Book.Title should not exceed 100 characters!, 
+       Payload is null,  HttpSttausCode is Bad Request.
+
+
+Bug6   AddingBookWithInvalidIdAndAuthorAndTitleThrowsErrorMessageOnlyForInvalidId 
+Step1. Navigate to URL Page http://localhost:9000/api/books where we can add book.
+Step2. When we enter invalid id book with title length 100chars it appears to be an invalid action.
+       (id = int.MinValue,  InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1", 
+       InvalidTitle101CharsLength =
+              "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12", 
+       Description = "TestDescription")
+       From the 3 invalid Book Properies it throws Error only on invalid Id  :
+                                                      "Book.Id should be a positive integer!\r\nParameter name: book.Id" 
+       Would it be better to throw error for the invalid Title, and Invalid Author too ?            
+       Into the error Message "Book.Id should be a positive integer!\r\nParameter name: book.Id" ,
+       book.Id should be corrected  to Book.Id for consistency to be one format everywhere.
+
+
+
+ TestUpdateBook.cs  FILE 
+
+ Bug7   UpdatingBookWithInvalidIdAndAuthorAndTitleThrowsNotErrorMessageForInvalidAuthor
+ Step1. Navigate to URL Page http://localhost:9000/api/books/{id}  where we can update book.
+ Step2. First create valid book (bookId = 1, Author = "TestAutor", Title = "TestTitle", Description = "TestDescription")
+ Step3. Then we update the existing book with invalid values for id, Author and Title fields with following valiues:
+        (bookId = int.MinValue, InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1", 
+        InvalidTitle101CharsLength = 
+               "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12",
+        UpdatedDescription = "Hard times"); 
+        The updatedAuthor31CharsLength contains 31chars, that is invalid, but no error is thrown for it. ErrorMessage 
+        is thrown for property UpdatedTitle101CharsLength which is 101 (invalid) characters, 
+        and for property Id = int.MinValue (invalid), that is correct. But is it ok from 3 Properies with invalid 
+        values to throw an ErrorMessage only for two of them ? For invalid Author - there is no errormessage. 
+        Description field is correct, there is no litmitations for it.
+            Expected is to throw errror message for invalid Id, invalid Autor and invalid Title,
+            but actual is as follows:
+            
+            Message:
+            Expected string length 72 but was 62.Strings differ at index 5.
+            Expected: "Book.Title should not exceed 100 characters!\r\nParameter name:..."
+            But was:  "Book.Id should be a positive integer!\r\nParameter name: book.Id"
+
+
+Bug8   UpdatingBookWithValidIdAndInvalidAuthorAndTitlethrowsErrorMessageNotForInvalidAuthor
+Step1. Navigate to URL Page where http://localhost:9000/api/books/{id} we can update book.
+Step2. First create valid book (bookId = 1, Author = "TestAutor", Title = "TestTitle", Description = "TestDescription").
+Step3. Then we update the existing book with valid values id and description, and invalid values for Author and Title 
+       with following valiues:
+       (bookId = 1, InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1", 
+        InvalidTitle101CharsLength = 
+               "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12",
+        UpdatedDescription = "Hard times"); 
+        Expected to throw an error for invalid Author and invalid title.
+        Actual it throws error message only for invalid title: 
+                                                     "Book.Title should not exceed 100 characters!\r\nParameter name:..."
+
+
+
+Bug9   UpdateBookAuthorWithLength30CharsThrowsErrorAndIsAuthorFieldIsNotUpdated
+Step1. Navigate to URL Page where http://localhost:9000/api/books/{id} we can update book.
+Step2. First create valid book (bookId = 1, Author = "TestAutor", Title = "TestTitle", Description = "TestDescription")
+Step3. We update the Book properties to (bookId = 1,ValidAuthor30CharsLength = "TestAuthorTestAuthorTestAuthor", 
+Title = "TestTitle", Description = "TestDescription"). 
+Expected: As the updated Title has 30 chars, the Title should be updated, and no Error message should appear.
+Actual: in response the Title is not updated, that is not correct according requirements and the message appears:
+                                                 "Book.Author should not exceed 30 characters!\r\nParameter name: Book.Author"
+
+
+Bug10  UpdateBookTitleWithLength100CharsIsThrowingErrorAndTitleIsNotUpdated
+Step1. Navigate to URL Page where http://localhost:9000/api/books/{id} we can update book.
+Step2. First create valid book (bookId = 1, Author = "TestAutor", Title = "TestTitle", Description = "TestDescription")
+Step3. Update the Book properties to (bookId = 1, ValidTitle100CharsLength = 
+       "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1",
+       Description = "TestDescription")
+       Expected: Book Title should be updated to the new value. No Error Message should appear.
+       Actual: Book Title is not updated, and Error Message appears, that is not correct according to the requirements.
+                                              "Book.Title should not exceed 100 characters!\r\nParameter name: Book.Title"
+
+
+
+       TestGetBook.cs File
+
+Bug11  NotUpdatedDescriptionFieldInResponseWhenBookCreatedAndUpdated
+Step1. Navigate to URL Page http://localhost:9000/api/books/{id} where we can get book.
+Step2. First create valid book (bookId = 1, Author = "TestAutor", Title = "TestTitle", Description = "TestDescription")
+Step3. We update the Id, Author, Title , Description with values as follows: (bookId = 1, 
+       UpdatedAuthor = "Ivan Vazov1" , UpdatedTitle = "Pod Igoto Tom 1" , UpdatedDescription = "Hard times")
+Step4  When we use the getBook method responseGetBook = LibraryManagerClient.GetBook(bookId)
+       in the response is present old value of Description = "TestDescription", but is should but is should stay "Hard times".
+        
+
+
+
+ 

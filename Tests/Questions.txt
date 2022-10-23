@@ -1,0 +1,27 @@
+﻿Questions.
+
+Add a book Functionality;
+
+Book's properties should answer to certain requirements:
+Id - positive int; 
+Author - string, not longer than 30 chars.(from 31 chars inclusive is not allowed)
+Title - string, not longer than 100 chars. (from 101 chars inclusive is not allowed)
+Description - string, oprional.(We may have a description, may have not).
+
+Is is a good idea the ids of the book to be entered by the users, isn't it better to be auto incremented ?
+Will it be better if we have some char count limitation of the length of the Description property ?
+
+Once added is Id possible to be changed (I have presumed that the Id field once created is immutable) ?
+
+Into Bug6 Would it be better to throw error for the invalid Title, and Invalid Author too ?,
+becasue it trwos error only for invalid Id?
+
+On Bug8 when Updating a Book With Valid Id And Invalid Author And invalid Title it throws Error Message not for 
+Invalid Author, it throws an error message only for invalid title(UpdatedTitle101CharsLength). Is it ok from 2 Properies with invalid values 
+to throw an ErrorMessage only for one of them. for InvalidAuthor31CharsLength there is no error message appearing ?
+
+What response statusCode should the Api return to us, when there are no books entered in the Application, 
+when SearchString is :"", "  ", null  ?
+
+Question is the searchResult dependant on Capital or Lower Case (CaseSensitive) i think yes ?
+Should it be better if the searching is independant from Capital/Lower Case of the input string ?

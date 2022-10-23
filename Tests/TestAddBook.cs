@@ -10,149 +10,172 @@ namespace LibraryManagerTests.Tests
     {
         [Test]
         public void AddBook_AllFields_ShouldPass()
-        {            
-            var book = new Book(CurrentId, Author, Title, Description);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
+        {
+            var bookId = 1;
+            IdCollection.Add(bookId);            
+            var book = new Book(bookId, Author, Title, Description);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
 
-            //Bug: AuthorProperty value in the response is null, but shoud be Ivan Vazov
-            //var book = new Book(currentId, "Ivan Vazov", "Pod Igoto", "Hard time for BG People");
-            //We compare obj book with the response.The response Author is null, whick is bug.
+            //probable Bug1: AuthorProperty value in the response is null, but should be TestAuthor
+            
+            AssertSuccessfulResponse(book, addedBookResponse);
 
-            AssertSuccessfulResponse(book, createdBookResponse);
+            //Author property is commented "//" inside AssertSuccessfulResponse method to be able to test other Assertions
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase(" ")]
+        public void AddBook_NoDescriptionOrWhiteSpace_ShouldPass(string missingDescrtiption)
+        {
+            var bookId = 1;
+            IdCollection.Add(bookId);
+            var book = new Book(bookId, Author, Title, missingDescrtiption);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
+
+            AssertSuccessfulResponse(book, addedBookResponse);
+
+            //Probable Bug2 - In the Requirements there is no limitation of the Description field length.
+            //Would it be better we have some field length limitation here ?
+        }
+
+        [TestCase(ValidAuthor30CharsLength)]
+        [TestCase(ValidAuthor1CharsLength)]
+        public void AddBook_ValidAuthor_ShouldPass(string validAuthor)
+        {
+            var bookId = 500;
+            IdCollection.Add(bookId);
+            var book = new Book(bookId, validAuthor, Title, Description);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
+
+            AssertSuccessfulResponse(book, addedBookResponse);
+
+            //probable Bug3: Entering book with Author 30 Symbols length should be allowed according to the requirements, but it is not. As a result the book with Author in length 30 chars is not present into the response, but it should be present.           
+            // Entering a book with  Author Length 1 Symbol. Into the Response the Author is with null Value, it should be Author with Value "I" (one symbol length);
         }
 
         [Test]
         public void AddTwoBooks_AllFields_ShouldPass()
         {
-            var book = new Book(CurrentId, Author, Title, Description);
-            LibraryManagerClient.AddBook(book);
+            var bookId1 = 100;
+            IdCollection.Add(bookId1);
+            var book1 = new Book(bookId1, Author, Title, Description);
+            LibraryManagerClient.AddBook(book1);
 
-            var bookSecond = new Book(CurrentId + 1, Author, Title, Description);
-            var createdSecondBookResponse = LibraryManagerClient.AddBook(bookSecond);
+            var bookId2 = 2;
+            IdCollection.Add(bookId2);
+            var bookSecond = new Book(bookId2, UpdatedAuthor, UpdatedTitle, UpdatedDescription);
+            var addedBookResponse = LibraryManagerClient.AddBook(bookSecond);
 
-            AssertSuccessfulResponse(bookSecond, createdSecondBookResponse);
+            AssertSuccessfulResponse(bookSecond, addedBookResponse);
+        }
 
-            // in bookSecond the property Author is "Ivan Vazov" , in object createdSecondBookResponse property Author is null.
+        [Test]
+        public void AddBook_SameAuthorTitleDescriptionTwice_ShouldPass()
+        {
+            var firstBookId = 1;
+            IdCollection.Add(firstBookId);
+            var firstBook = new Book(firstBookId, Author, Title, Description);
+            LibraryManagerClient.AddBook(firstBook);
+
+            var secondBookId = 100;
+            IdCollection.Add(secondBookId);
+            var secondBook = new Book(secondBookId, Author, Title, Description);
+            var addedBookResponse = LibraryManagerClient.AddBook(secondBook);
+
+            AssertSuccessfulResponse(secondBook, addedBookResponse);
+
+            // repeating bug as before here : Propery Author in response is null, should be Author = "TestAutor".
+            // One Assertion is commented into AssertSuccessfulResponse ();
         }
 
         [Test]
         public void AddBook_SameIdTwice_ShouldFail()
         {
-            var book = new Book(CurrentId, Author, Title, Description);
-            LibraryManagerClient.AddBook(book);            
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
+            var bookId = 1000;
+            IdCollection.Add(bookId);
+            var book = new Book(bookId, Author, Title, Description);
+            LibraryManagerClient.AddBook(book);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
 
-            AssertFailingResponse(createdBookResponse, String.Format(ExistingIdError, CurrentId), HttpStatusCode.BadRequest);            
-        }        
+            AssertFailingResponse(addedBookResponse, String.Format(ExistingIdError, bookId), HttpStatusCode.BadRequest);
+        }
 
         [TestCase(int.MinValue)]
         [TestCase(-1)]
         [TestCase(0)]
-        public void AddABook_InvalidId_ShouldFail(int invalidId)
-        {      
-            var book = new Book(invalidId, Author, Title, Description);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);            
-            
-            AssertFailingResponse(createdBookResponse, InvalidIdError, HttpStatusCode.BadRequest);
-        }  
+        public void AddBook_InvalidId_ShouldFail(int invalidId)
+        {
+            var bookId = invalidId;
+            IdCollection.Add(bookId);
+            var book = new Book(bookId, Author, Title, Description);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
 
-        [TestCase("", AuthorRequiredError) ]
-        [TestCase(" ", AuthorRequiredError) ]
+            AssertFailingResponse(addedBookResponse, InvalidIdError, HttpStatusCode.BadRequest);
+        }
+
+        [TestCase("", AuthorRequiredError)]
+        [TestCase(" ", AuthorRequiredError)]
         [TestCase(null, AuthorRequiredError)]
         [TestCase(InvalidAuthor31CharsLength, TooLongAuthorError)]
-        public void AddABook_InvalidAuthor_ShouldFail(string invalidAuthor, string errorMessage)   
+        public void AddBook_InvalidAuthor_ShouldFail(string invalidAuthor, string errorMessage)
         {
-            var book = new Book(CurrentId, invalidAuthor, Title, Description);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
+            var bookId = 1;
+            IdCollection.Add(bookId);
+            var book = new Book(bookId, invalidAuthor, Title, Description);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
 
-            AssertFailingResponse(createdBookResponse, errorMessage, HttpStatusCode.BadRequest);
-            //AuthorProperty is it Required ?
+            AssertFailingResponse(addedBookResponse, errorMessage, HttpStatusCode.BadRequest);
+
+            //Bug4      AuthorProperty is it Required ?
             //When we pass AuthorProperty the value "", null, White space
-            //The response Error is:
-            // Message:
+            //The response Error message is:            
             // String lengths are both 61.Strings differ at index 50.
             // Expected: "Book.Author is a required field.\r\nParameter name: Book.Author"
             // But was: "Book.Author is a required field.\r\nParameter name: book.Author"
-            // book.Author must me with Capital "B"
-            //When AuthorProperty is AthorProperty is 31Symbols test passes, becasue validation works.
-        }
-
-        [TestCase(ValidAuthor30CharsLength)]
-        [TestCase(ValidAuthor1CharsLength)]
-        public void AddBook_ValidAuthor_ShouldPass(string validAuthor) 
-        {
-            var book = new Book(CurrentId, validAuthor, Title, Description);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
-
-            AssertSuccessfulResponse(book, createdBookResponse);
-
-            //Bug: Entering book with Author 30 Symbols length should be allowed according to the requirements.
-            //In practice the responseObject has Error, ErrorMessage ->Book.Author should not exceed 30 characters!, the payload is Empty, the Response HttpStatuscode is BadRequest, object book is not present inot the response, which is all wrong.
-            //It should be Error is Empty, payload is full, and HttpStatusCode is "OK".book should be present in Response.
-            // Entering a book with  Author Length 1 Symbol. Into the Response the Author is with nullValue, it should be Author with Value "I" ;
+            // book.Author must me with Capital "B" probably there should be "!" instead of "." symbol
+            // after field for consistency with the other errror messages.
         }
 
         [TestCase("", TitleRequiredError)]
         [TestCase(" ", TitleRequiredError)]
         [TestCase(null, TitleRequiredError)]
         [TestCase(InvalidTitle101CharsLength, TooLongTitleError)]
-        public void AddABook_InvalidTitleCharsCount_ShouldFail (string invalidTitle, string expectedError)
+        public void AddABook_InvalidTitle_ShouldFail(string invalidTitle, string expectedError)
         {
-            var book = new Book(CurrentId, Author, invalidTitle, Description);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
+            var bookId = 1;
+            IdCollection.Add(bookId);
+            var book = new Book(bookId, Author, invalidTitle, Description);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
 
-            AssertFailingResponse(createdBookResponse, expectedError, HttpStatusCode.BadRequest);
+            AssertFailingResponse(addedBookResponse, expectedError, HttpStatusCode.BadRequest);
         }
 
         [TestCase(ValidTitle100CharsLength)]
         [TestCase(ValidTitle1CharsLength)]
         public void AddBook_ValidTitle_ShouldPass(string validTitle)
         {
-            var book = new Book(CurrentId, Author, validTitle, Description);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
+            var bookId = 1;
+            IdCollection.Add(bookId);
+            var book = new Book(bookId, Author, validTitle, Description);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
 
-            AssertSuccessfulResponse(book, createdBookResponse);
+            AssertSuccessfulResponse(book, addedBookResponse);
 
-            //Adding book with Title length 100 chars is possible accroding to the requirements.
-            //The Response with Title length is 100 Chars is not added, which is not correct.
-            //There is Error, Error Message(Adding book failed, Book.Title should not exceed 100 characters!),
-            //HttpStatusCode is "BadRequest" which not correct.
-            //Book with Title Lenght 100 should be possible present/ added into the Response, HttpStatuscode should be "OK".
-            //Error must be null.
-        }
+            //Bug 5 AddingBookTitleWithLength100CharsIsNotPossible. When we enter a book with title with length 100chars appears to be an invalid operation.The title is not added/present and the response  and the response gives an Error Message(Adding book failed, Book.Title should not exceed 100 characters!) which not correct.Payload is null, Bad request. According to the requirements a Book with Title length 100 chars should be added and present into the Response, HttpStatuscode should be "OK" and Error must be null (No error message should appear in response).
+        }       
 
-        [TestCase(null)]
-        [TestCase("")]
-        [TestCase(" ")]
-        public void AddABook_NoDescriptionOrWhiteSpace_ShouldPass(string emptyDescrtiption) 
-        {
-            var book = new Book(CurrentId, Author, Title, emptyDescrtiption);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
-
-            AssertSuccessfulResponse(book, createdBookResponse );
-            //In the Document there is no limitation of the Description fieled length.
-            //Would not it better we to have some field length limitation here ?
-        }
-
-        [Test]  // how to write such a test ?
+        [Test] 
         public void AddBook_AllFieldsInvalid_ShouldFail()
         {
             var book = new Book(int.MinValue, InvalidAuthor31CharsLength, InvalidTitle101CharsLength, Description);
-            var createdBookResponse = LibraryManagerClient.AddBook(book);
+            var addedBookResponse = LibraryManagerClient.AddBook(book);
 
-            AssertFailingResponse(createdBookResponse, InvalidTitle101CharsLength, HttpStatusCode.BadRequest);
-            // From the 3 Book Properies it throws Error only on invalid Title Length -> InvalidTitle101CharsLength, 
-            // would it be better to throw error for the invalid Id, and Invalid Author ?
-            // for Descripion we dont have limitations but we should ?
-
-           // AssertFailingResponse(createdBookResponse, InvalidAuthor31CharsLength, HttpStatusCode.BadRequest);
-
-        }
-
-        [Test]
-        public void AddBook_SameAuthorTwice_ShouldPassORFail() 
-        {
-          // TODO ? //SameTitleTwice? //SameDescriptionTwice?
-        }
+            AssertFailingResponse(addedBookResponse, InvalidIdError, HttpStatusCode.BadRequest);
+            // Bug6: From the 3 invalid Book Properies it throws Error only on invalid Id  ->  
+            // (would it be better to throw error for the invalid Title, and Invalid Author too ? )          
+            // into the error Message "Book.Id should be a positive integer!\r\nParameter name: book.Id" ,
+            // book.Id should be corrected to Book.Id for consistency to be one format everywhere.         
+        }     
     }
 }

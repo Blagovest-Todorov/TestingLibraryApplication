@@ -5,45 +5,88 @@ using System.Net;
 
 namespace LibraryManagerTests.Tests
 {
+    [TestFixture]
     internal class TestDeleteBook : BaseTest
     {
         [Test]
-        public void DeleteBook_ShouldPass() 
+        public void DeleteBook_ShouldPass()
         {
-            var book = new Book(CurrentId, Author, Title, Description);
-            LibraryManagerClient.AddBook(book);           
-            // Is IT Correct structured and written ?
-            var response = LibraryManagerClient.DeleteBook(CurrentId);
+            var bookId = 1;
+            var book = new Book(bookId, Author, Title, Description);
+            LibraryManagerClient.AddBook(book);
+            var response = LibraryManagerClient.DeleteBook(bookId);
 
-            Assert.IsNotNull(response);
-            Assert.IsNull(response.Payload);
-            Assert.IsNull(response.Error);
-            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
-            Assert.IsNull(response.Error?.Message);
+            AssertSucessfulDelitionResponse(response);
 
-            var expectedBooks = 0;
-            var actualAfterDelitionBooksCount = LibraryManagerClient.GetBooks().Payload.Count;
-            Assert.AreEqual(expectedBooks, actualAfterDelitionBooksCount);            
+            var getBookResponse = LibraryManagerClient.GetBook(bookId);
+            AssertFailingResponse(getBookResponse, String.Format(NonExistingIdError, bookId), HttpStatusCode.NotFound);
+        }        
+        
+        [Test]
+        public void DeleteBook_When_BookAddedAndUpdated_ShouldPass()
+        {
+            var bookId = 1000;
+            var book = new Book(bookId, Author, Title, Description);
+            LibraryManagerClient.AddBook(book);
+
+            var updatedBook = new Book(bookId, UpdatedAuthor, UpdatedTitle, UpdatedDescription);
+            LibraryManagerClient.UpdateBook(updatedBook, bookId);
+            var response = LibraryManagerClient.DeleteBook(bookId);
+
+            AssertSucessfulDelitionResponse(response);
         }
 
         [Test]
-        public void Delete_NonExistingBook_ShouldFail()
-        {      
-            int expectedCountOfBooks = 0;
-            int actualCountOfBooks = LibraryManagerClient.GetBooks().Payload.Count;            
-            var response = LibraryManagerClient.DeleteBook(CurrentId);           
+        public void DeleteBook_When_TwoBooksAdded_ShouldPass()
+        {
+            var bookId1 = 1;
+            var book1 = new Book(bookId1, Author, Title, Description);
+            LibraryManagerClient.AddBook(book1);            
 
-            Assert.AreEqual(expectedCountOfBooks, actualCountOfBooks);
-            AssertFailingResponse(response, String.Format(NonExistingIdError, CurrentId), HttpStatusCode.NotFound);
+            var bookId2 = 100;
+            var book2 = new Book(bookId2, Author, Title, Description);
+            LibraryManagerClient.AddBook(book2);
+
+            var responseDeletedBook1 = LibraryManagerClient.DeleteBook(bookId1);
+            AssertSucessfulDelitionResponse(responseDeletedBook1);
+
+            var responseDeletedBook2 = LibraryManagerClient.DeleteBook(bookId2);
+            AssertSucessfulDelitionResponse(responseDeletedBook2);
+        } 
+
+        [Test] 
+        public void DeleteBook_When_TwoBooksAreAddedUpdated_ShouldPass()
+        { 
+            var bookId1 = 1;
+            var book1 = new Book(bookId1, Author, Title, Description);
+            LibraryManagerClient.AddBook(book1);
+
+            var bookId2 = 100;
+            var book2 = new Book(bookId2, Author, Title, Description);
+            LibraryManagerClient.AddBook(book2);
+
+            var updatedBook1 = new Book(bookId1, UpdatedAuthor, UpdatedTitle, UpdatedDescription);
+            var updatedBook2 = new Book(bookId2, UpdatedAuthor, UpdatedTitle, UpdatedDescription);
+
+            LibraryManagerClient.UpdateBook(updatedBook1, bookId1);
+            LibraryManagerClient.UpdateBook(updatedBook2, bookId2);
+
+            var responseDeletedBook1 = LibraryManagerClient.DeleteBook(bookId1);
+            AssertSucessfulDelitionResponse(responseDeletedBook1);  
+           
+            var responseDeletedBook2 = LibraryManagerClient.DeleteBook(bookId2);
+            AssertSucessfulDelitionResponse(responseDeletedBook2);
         }
 
         [TestCase(int.MinValue)]
+        [TestCase(-1)]
         [TestCase(0)]
-        public void DeleteBook_InvalidId_ShouldFail(int invalidId) 
+        [TestCase(10)]
+        public void DeleteBook_InvalidOrNonExistingId_ShouldFail(int invalidOrNonExistingId)
         {
-            var response = LibraryManagerClient.DeleteBook(invalidId);            
+            var response = LibraryManagerClient.DeleteBook(invalidOrNonExistingId);
 
-            AssertFailingResponse(response, String.Format(NonExistingIdError, invalidId), HttpStatusCode.NotFound);
+            AssertFailingResponse(response, String.Format(NonExistingIdError, invalidOrNonExistingId), HttpStatusCode.NotFound);
         }
     }
 }

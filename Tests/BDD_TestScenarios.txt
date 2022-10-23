@@ -1,0 +1,720 @@
+﻿ (BDD)
+
+ GET BOOKS
+
+ Scenario # 1: Successful Get books from the system;    
+
+Test Case 1. Get books when searching by existing exact FullTitle (FullTitle = "TestTitle1")
+      Given  The user wants to get books from the system by FullTitle (books are already added to the system,
+             book Title exists)
+        And  The user accesses the get book end point.
+        And  User fills the valid value for Book properties: Title
+       When  submites the entered information.
+       Then  The book is sucessfully retrieved from LibraryManager App. The book is present in the response.
+
+       The entered books in the system are:
+
+      Example:  | 1 | TestAuthor1 | TestTitle1      | TestDescription1        |
+                | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                | 3 | TestAuthor3 | TestTitle3      | TestDescription3        |
+                | 4 | Ivan Vazov  | Pod Igoto       | Hard time for BG People |
+                | 5 | TESTAUTHOR5 | TESTTITLE5      | TESTDESCRIPTION5        |
+                | 6 | testauthor6 | testtitle6      | testdescription6        |
+                | 7 | testAutor7  | testTestTitle7  | TestDescription1        |
+                | 8 | testAutor8  | testTESTTitle8  | TestDescription1        |
+                | 9 | testAutor9  | 789             | TestDescription9        |
+                | 10| testAutor10 | 789102          |
+
+                When we search by string  FullTitle = "TestTitle1" -> the response should return this record:
+                | 1 | TestAuthor1 | TestTitle1      | TestDescription1       |
+
+               
+              
+ Test Case 2. Get books when searching by existing partial title (first by search string: "2", then by string = "Title2")
+       Given  The user wants to get books from the system by partial title (books are already added to the system, 
+              book Title exists)
+         And  The user accesses the get book end point.
+         And  User fills the valid value for Book properties: Title
+        When  submites the entered information.
+        Then  The book(s) is/are sucessfully retrieved from LibraryManager App. The book(s) is/are present in the 
+              response.
+
+        The entered books in the system are:
+
+      Example:  | 1 | TestAuthor1 | TestTitle1      | TestDescription1        |
+                | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                | 3 | TestAuthor3 | TestTitle3      | TestDescription3        |
+                | 4 | Ivan Vazov  | Pod Igoto       | Hard time for BG People |
+                | 5 | TESTAUTHOR5 | TESTTITLE5      | TESTDESCRIPTION5        |
+                | 6 | testauthor6 | testtitle6      | testdescription6        |
+                | 7 | testAutor7  | testTestTitle7  | TestDescription1        |
+                | 8 | testAutor8  | testTESTTitle8  | TestDescription1        |
+                | 9 | testAutor9  | 789             | TestDescription9        |
+                | 10| testAutor10 | 789102          |
+
+                When we search first by string  parcialTitle = "2" ,then by string = "Title2"-> the response 
+                should return records:
+                | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                | 10| testAutor10 | 789102          |                         |               
+ 
+   
+   
+ Test Case 3. Get books when there are books added in the system and search is by empty or white space title string.
+       Given  The user wants to get books from the system by title that is: ("", null, " ")
+         And  The user accesses the get book end point.
+         And  User fills the valid value for Book properties: Title
+        When  submites the entered information.
+        Then  All books availabale books are sucessfully retrieved from LibraryManager App.and present in the response.
+        
+       All availble books inm DB are
+       Example: | 1 | TestAuthor1 | TestTitle1      | TestDescription1        |
+                | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                | 3 | TestAuthor3 | TestTitle3      | TestDescription3        |
+                | 4 | Ivan Vazov  | Pod Igoto       | Hard time for BG People |
+                | 5 | TESTAUTHOR5 | TESTTITLE5      | TESTDESCRIPTION5        |
+                | 6 | testauthor6 | testtitle6      | testdescription6        |
+                | 7 | testAutor7  | testTestTitle7  | TestDescription1        |
+                | 8 | testAutor8  | testTESTTitle8  | TestDescription1        |
+                | 9 | testAutor9  | 789             | TestDescription9        |
+                | 10| testAutor10 | 789102          |
+  
+     The same books are displayed in the response when the saerch string is one of these : ("", null, " ").
+     Total 10 books are present in the response. 
+
+     
+ Test Case 4. Get books when there are books added in the system and search is by case sensitivity should pass.
+       Given  The user wants to get books from the system by title string that is: (
+              "TESTTITLE", "testtitle", "TEST", "test")
+         And  The user accesses the get book end point.
+         And  User fills the valid value for Book properties: Title
+        When  submites the entered information.
+        Then  response is case sensitive and book(s) is/are sucessfully retrieved from LibraryManager App.
+              and is/are present in the response.
+
+        TitleCapitalCase = "TESTTITLE"; 
+        TitleLowerCase = "testtitle";        
+        PartialTitleCapitalCase = "TEST";
+        PartialTitleLowerCase = "test";
+
+       All availble books inm DB are
+       Example: | 1 | TestAuthor1 | TestTitle1      | TestDescription1        |
+                | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                | 3 | TestAuthor3 | TestTitle3      | TestDescription3        |
+                | 4 | Ivan Vazov  | Pod Igoto       | Hard time for BG People |
+                | 5 | TESTAUTHOR5 | TESTTITLE5      | TESTDESCRIPTION5        |
+                | 6 | testauthor6 | testtitle6      | testdescription6        |
+                | 7 | testAutor7  | testTestTitle7  | TestDescription1        |
+                | 8 | testAutor8  | testTESTTitle8  | TestDescription1        |
+                | 9 | testAutor9  | 789             | TestDescription9        |
+                | 10| testAutor10 | 789102          |
+                 
+                 The response is case Sensitive dependant on da case sesitivity on the current search string.
+                 search  by TESTTITLE, the  response returns: 
+                              | 5 | TESTAUTHOR5 | TESTTITLE5    | TESTDESCRIPTION5   |
+
+                             
+
+ Test Case 5. Get books when there are books added in the system and search string contains/is/ by number.
+       Given  The user wants to get books from the system by title string that is: ("2")             
+         And  The user accesses the get book end point.
+         And  User fills the valid value for Book properties: Title
+        When  submites the entered information.
+        Then  response book(s) is/are sucessfully retrieved from LibraryManager App.
+              and is/are present in the response.      
+
+       All availble books inm DB are
+       Example: | 1 | TestAuthor1 | TestTitle1      | TestDescription1        |
+                | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                | 3 | TestAuthor3 | TestTitle3      | TestDescription3        |
+                | 4 | Ivan Vazov  | Pod Igoto       | Hard time for BG People |
+                | 5 | TESTAUTHOR5 | TESTTITLE5      | TESTDESCRIPTION5        |
+                | 6 | testauthor6 | testtitle6      | testdescription6        |
+                | 7 | testAutor7  | testTestTitle7  | TestDescription1        |
+                | 8 | testAutor8  | testTESTTitle8  | TestDescription1        |
+                | 9 | testAutor9  | 789             | TestDescription9        |
+                | 10| testAutor10 | 789102        
+
+                When we search by number 2 the response returns two records as follow:
+
+                 | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                 | 10| testAutor10 | 789102        
+
+ 
+ 
+Scenario # 2: Unsuccessful Get books from the system;
+
+ Test Case 6. Get books when no books are added and search by non existing or empty or white space title.
+       Given  The user wants to get books from the system when entere title is:  ("", null, " ")
+         And  The user accesses the get book end point.
+         And  User fills the valid value for Book properties: Title
+        When  submites the entered information.
+        Then  No book(s) is/are retrieved from LibraryManager App. No book{s) is/are present in the response.
+
+        There are no entered books in the system so, response will not contain any book.
+
+
+Test Case 7. Get books when there are books added in the system and search is by non existing title string ("ComeHere").
+       Given  The user wants to get books from the system by title that is: ("ComeHere")
+         And  The user accesses the get book end point.
+         And  User fills the valid value for Book properties: Title
+        When  submites the entered information.
+        Then  No books are retrieved from LibraryManager App. and no books present in the response.
+        
+       All availble books inm DB are
+       Example: | 1 | TestAuthor1 | TestTitle1      | TestDescription1        |
+                | 2 | TestAuthor2 | TestTitle2      | TestDescription2        |
+                | 3 | TestAuthor3 | TestTitle3      | TestDescription3        |
+                | 4 | Ivan Vazov  | Pod Igoto       | Hard time for BG People |
+                | 5 | TESTAUTHOR5 | TESTTITLE5      | TESTDESCRIPTION5        |
+                | 6 | testauthor6 | testtitle6      | testdescription6        |
+                | 7 | testAutor7  | testTestTitle7  | TestDescription1        |
+                | 8 | testAutor8  | testTESTTitle8  | TestDescription1        |
+                | 9 | testAutor9  | 789             | TestDescription9        |
+                | 10| testAutor10 | 789102          |
+  
+     The response contains no books as the search is by non existing title string ("ComeHere").
+
+
+
+
+
+
+
+
+     
+ GET BOOK
+ Scenario # 1: Successful Get a book from the system;
+   
+
+Test Case 1. Get a book by valid id.
+      Given  The user wants to get a book from the system. (The book id is existing, book is already added in the system)
+        And  The user accesses the get book end point.
+        And  User fills the valid value for Book properties:Id
+       When  submites the entered information.
+       Then  The book is sucessfully retrieved from LibraryManager App. The book is present in the response.
+
+    Example: | Id   | Author   | Title        | Description     |
+             | 1    |TestAutor | TestTitle    | TestDescription |   
+
+
+Test Case 2. Get book when two books consecutively are added. 
+      Given  The user wants to get two books one after another from the system. (The two books are added,
+             ids are existing and valid)
+        And  The user accesses the get book end point.
+        And  User fills the valid value for Book properties:Id
+       When  submites the entered information.
+       Then  The book is sucessfully retrieved from LibraryManager App. The book is present in the response.
+
+    Example: | Id    | Author   | Title        | Description     |
+             | 90000 |TestAutor | TestTitle    | TestDescription |
+             | 90    |TestAutor | TestTitle    | TestDescription |  
+
+
+Test Case 3. Get book when a book is added and updated. (id is existing and valid)
+      Given  The user wants to get a book, that is firstly added then updated (id is existing and valid)
+        And  The user accesses the get book end point.
+        And  User fills the valid value for Book properties:Id
+       When  submites the entered information.
+       Then  The book is sucessfully retrieved from LibraryManager App. The book is present in the response.
+
+    Example: | Id    | Author      | Title            | Description     |
+             | 90000 | TestAutor   | TestTitle        | TestDescription |
+             | 90000 | Ivan Vazov1 | Pod Igoto Tom 1  | Hard times      | 
+
+               
+   
+   Scenario # 2: Unsuccessful Get a book from the system
+
+
+Test Case 4. Get book when Id is invalid or non existing 
+      Given  The user wants to get a book by id when id is invalid or non existing
+        And  The user accesses the get book end point.
+        And  User fills the value for Book properties:Id
+       When  submites the entered information.
+       Then  The book is not retrieved from LibraryManager App. The book is not present in the response,
+             respective Id error message appears
+
+    Example: | Id          | 
+             | intMinvalue | 
+             |  0          | 
+             | -1          | 
+             | 90000       |
+
+
+Test Case 5. Get book when book is added then is deleted
+      Given  The user wants to get a book by id when the book is firstly added then deleted(book is not existing, 
+             id non existing)
+        And  The user accesses the get book end point.
+        And  User fills the value for Book properties:Id
+       When  submites the entered information.
+       Then  The book is not retrieved from LibraryManager App. The book is not present in the response,
+             respective Id error message appears.
+             
+
+Test Case 6. GetBook when two books are added and then deleted
+      Given  The user wants to get a book by id when firstly two books are added then deleted(books are not existing, 
+             ids non existing)
+        And  The user accesses the get book end point.
+        And  User fills the value for Book properties:Id
+       When  submites the entered information.
+       Then  Each book is not retrieved from LibraryManager App. Each book is not present in the response,
+             respective Id error message appears.
+ 
+
+
+Test Case 7. GetBook when two books are added, then updated and then deleted (book and id are not existing)
+      Given  The user wants to get a book by id when firstly two books are added, then updated then deleted 
+             (books are not existing, ids non existing)
+        And  The user accesses the get book end point.
+        And  User fills the value for Book properties:Id
+       When  submites the entered information.
+       Then  Each book is not retrieved from LibraryManager App. Each book is not present in the response,
+             respective Id error message appears.
+
+
+
+
+
+
+
+
+
+
+ADDING A BOOK
+
+Scenario # 1: Successful adding a book into the system; 
+
+Test Case 1. Regular Adding a book with all valid fields.
+      Given  The user wants to add a book into the system. 
+        And  The user accesses the add book end point.
+        And  User fills the valid values for Book properties:Id, Author, Title and Description
+       When  submites the entered information.
+       Then  The book is sucessfully added and saved into the LibraryManager App. The book is present in the response.
+
+    Example: | Id   | Author   | Title        | Description     |
+             | 1    |TestAutor | TestTitle    | TestDescription |     
+
+
+Test Case 2. Regular Adding a book with no value for Description or whiteSpace("", null, " ").  
+      Given  The user wants to add a book into the system. 
+        And  The user accesses the add book end point.
+        And  User fills the valid values for Book properties:Id, Author, Title and no value for Description 
+       When  submites the entered information.
+       Then  The book is sucessfully added and saved into the LibraryManager App. The book is present in the response.
+
+    Example: | Id   | Author   | Title        | Description |
+             | 1    |TestAutor | TestTitle    |             |     
+
+
+ Test Case 3. Regular Adding a book - Author with 30 chars or 1 chars.  
+       Given  The user wants to add a book into the system. 
+         And  The user accesses the add book end point.
+         And  User fills the valid values for Book properties:Id, Author, Title, Description.
+        When  submites the entered information.
+        Then  The book is sucessfully added and saved into the LibraryManager App. The book is present in the response.
+
+     Example: | Id  | Author                         | Title         | Description     |
+              | 500 | TestAuthorTestAuthorTestAuthor | TestTitle     | TestDescription | 
+              |     | T                              | TestTitle     | TestDescription | 
+              
+
+ Test Case 4.  Adding Two books with different ids, but with same Author, title, Description.
+        Given  The user wants to add a book into the system. 
+          And  The user accesses the add book end point.
+          And  User fills the valid values for first and second Book properties:Id, Author, Title, Description
+         When  submites the entered information.
+         Then  The two books are sucessfully added and saved into the LibraryManager App. The books are present in the response.
+
+     Example: | Id  | Author     | Title         | Description     |
+              | 100 | TestAuthor | TestTitle     | TestDescription | 
+              |  2  | TestAuthor | TestTitle     | TestDescription |   
+
+
+ Test Case 5.  Adding book with Title 1 Char and 100Chars Length.
+        Given  The user wants to add a book into the system. 
+          And  The user accesses the add book end point.
+          And  User fills the valid values for the Book: Id, Author, Title, Description
+         When  submites the entered information.
+         Then  Each book is sucessfully added and saved into the LibraryManager App. Each book is present in current response.
+
+     Example: | Id  | Author      | Title                    | Description     |
+              | 100 | TestAuthor  | ValidTitle100CharsLength | TestDescription |
+              |     | TestAuthor  | T                        | TestDescription |
+
+              ValidTitle100CharsLength =
+                         "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1"
+  
+Test Case 6. Regular Adding Two books with all valid fields (fields are with different valid values).
+      Given  The user wants to add a book into the system. 
+        And  The user accesses the add book end point.
+        And  User fills the valid values for first and second Book properties:Id, Author, Title and Description.
+       When  submites the entered information for the two books after one another.
+       Then  Each book is sucessfully added and saved into the LibraryManager App. Each book is present in current response.
+
+    Example: | Id   | Author     | Title           | Description     |
+             | 1    |TestAutor   | TestTitle       | TestDescription |  
+             | 2    |Ivan Vazov1 | Pod Igoto Tom 1 | Hard times      |  
+
+
+Scenario # 2: Unsuccessful adding a book into the system;
+
+Test Case 7.  The user trys to add two books with the same Id.
+       Given  The user wants to add two books with same Id number into the system. 
+         And  The user accesses the add book end point.
+         And  The user enters the first book Id = 100 and valid Athour, Title, Description and submits it.
+         And  The user enters the second book with the same Id = 100 and valid Author, Title, Description. 
+        When  submites the entered information.   
+        Then  The system refuses to add the second book, produces certain error Id message, the second book is not present
+              in the response. 
+
+     Example: | Id  | Author      | Title          | Description     |
+              | 100 |TestAuthor   | TestTitle      | TestDescription | 
+              | 100 |TestAuthor   | TestTitle      | TestDescription |  
+              
+  
+
+ Test Case 8.  The user trys to add a book with Invalid Id;
+        Given  The user wants to add two books with same Id number into the system. 
+          And  The user accesses the add book end point.
+          And  enteres invalid Id and valid Author, Title, Despription           
+         When  submites the entered information.
+         Then  The system refuses to add the book into the App, the book is not present into the response, 
+               response produces certain error Id message.
+
+     Example: | Id                | Author       | Title           | Description     |
+              | int.MinValue      | TestAuthor   | TestTitle       | TestDescription | 
+              | 0                 | TestAuthor   | TestTitle       | TestDescription |  
+              | -1                | TestAuthor   | TestTitle       | TestDescription |  
+
+
+ Test Case 9.  The user trys to add a book with Invalid Title;
+        Given  The user wants to add a book with invalid Title
+          And  The user accesses the add book end point.         
+          And  enteres valid Id, Author, invalid Title, valid Despription 
+         When  submites the entered information.  
+         Then  The book cannot be added into the App, the book is not present into the response, 
+               the response produces respective Title error message.
+
+     Example: | Id      | Author       | Title                      | Description     |
+              | 10      | TestAuthor   | ""                         | TestDescription | 
+              |         | TestAuthor   | " "                        | TestDescription |  
+              |         | TestAuthor   | null                       | TestDescription |  
+              |         | TestAuthor   | InvalidTitle101CharsLength | TestDescription |  
+
+              InvalidTitle101CharsLength = 
+                        "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12";
+
+Test Case 10.  The user trys to add a book with Invalid Author;
+        Given  The user wants to add a book with invalid author
+          And  The user accesses the add book end point.        
+          And  enteres valid Id, invalid Author, valid Title, Despription 
+         When  submites the entered information.  
+         Then  The book cannot be added into the App, the book is not present into the response, 
+               the response produces respective Author error message.
+
+     Example: | Id      | Author                     | Title     | Description     |
+              | 10      | InvalidAuthor31CharsLength | TestTitle | TestDescription | 
+              |         | ""                         | TestTitle | TestDescription |  
+              |         | " "                        | TestTitle | TestDescription |  
+              |         | null                       | TestTitle | TestDescription |  
+
+              InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1";              
+
+
+ Test Case 11. The user trys to add a book with all Invalid properties (except Description);
+        Given  The user wants to add a book with all invalid properties (invalid id, Author, Title, Description).
+          And  The user accesses the add book end point.          
+          And  enteres invalid Id, Author, Title, except Description that is always valid accrocting to requirements.
+         When  submites the entered information.
+         Then  The book cannot be added into the App, the book is not present into the response, the response produces 
+               respective error for Id, Error for Author, Error for Title
+               message.
+
+     Example: | Id                 | Author                       | Title                      | Description     |
+              |  0                 | InvalidAuthor31CharsLength   | InvalidTitle101CharsLength | TestDescription | 
+              | int.MinValue       | ""                           | ""                         | TestDescription |  
+              | -1                 | "  "                         | " "                        | TestDescription |  
+              |                    | null                         | null                       | TestDescription | 
+
+              InvalidTitle101CharsLength = 
+                         "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12";
+              InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1"; 
+
+
+
+
+
+
+
+
+
+
+
+
+UPDATING A BOOK 
+
+Scenario # 1: Successful update of a book into the system;
+
+ Test Case 1.  Regular Update of Existing book with all fields.
+        Given  The user wants to update an existing book into the system.(The book is already added and present into the system DB)
+          And  The user accesses the update book end point.
+          And  User fills the valid updated values for Book properties:Id(stays the same), Author, Title and Description
+         When  submites the entered updated information.
+         Then  The book is sucessfully updated and saved into the LibraryManager App. The updated book is present in the response.
+
+    Example:         | Id   | Author        | Title           | Description        |
+    old values       | 1    | TestAutor     | TestTitle       | TestDescription    | 
+    updated values   | 1    | Ivan Vazov1   | Pod Igoto Tom 1 | Pod Igoto Tom 1    |  
+           
+
+
+
+ Test Case 2.  Regular Update of Existing book with valid Author 1Char and 30 Chars length. 
+        Given  The user wants to update an existing book into the system.(The book is already added and present into the system DB)
+          And  The user accesses the update book end point.
+          And  User fills the valid updated values for Book properties:Id(stays the same), Author(updated),
+               Title and Description stays the same.
+         When  submites the entered updated information.
+         Then  The book Author is sucessfully updated and saved into the LibraryManager App. 
+               The updated book is present in the response.
+
+    Example:         | Id   | Author                     | Title           | Description        |
+    old values       | 1    | TestAutor                  | TestTitle       | TestDescription    | 
+    updated values   | 1    | ValidAuthor30CharsLength   | TestTitle       | TestDescription    |  
+    updated values   | 1    | T                          | TestTitle       | TestDescription    |   
+             
+                      ValidAuthor30CharsLength = "TestAuthorTestAuthorTestAuthor";
+
+
+  Test Case 3. Regular Update of Existing book with valid Title 1Char and 100 Chars length. 
+        Given  The user wants to update an existing book into the system.(The book is already added and present into the system DB)
+          And  The user accesses the update book end point.
+          And  User fills the valid updated values for Book properties:Id(stays the same), Author(stays the same), Title(to be updated), 
+               Description(stays the same).
+         When  submites the entered updated information.
+         Then  The book Title is sucessfully updated and saved into the LibraryManager App. The updated book is present in the response.
+
+    Example:         | Id   | Author                     | Title                       | Description        |
+    old values       | 1    | TestAutor                  | TestTitle                   | TestDescription    | 
+    updated values   | 1    | TestAutor                  | P                           | TestDescription    |  
+    updated values   | 1    | TestAutor                  | ValidTitle100CharsLength    | TestDescription    |  
+             
+                      ValidTitle100CharsLength = 
+                          "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1";
+                       
+                       
+ Test Case 4.  Regular Update of Existing book with Empty Description. 
+        Given  The user wants to update an existing book into the system.(The book is already added and present into the system DB)
+          And  The user accesses the update book end point.
+          And  User fills the valid updated values for Book properties:Id(stays the same), Author(stays the same), Title(stays the same), 
+               Description(to be updated).
+         When  submites the entered updated information.
+         Then  The book Description is sucessfully updated and saved into the LibraryManager App. 
+               The updated book is present in the response.
+
+    Example:         | Id   | Author                   | Title                     | Description        |
+    old values       | 1    | Ivan Vazov1              | Pod Igoto Tom 1           | TestDescription    | 
+    updated values   | 1    | Ivan Vazov1              | Pod Igoto Tom 1           | null               |  
+    updated values   | 1    | Ivan Vazov1              | Pod Igoto Tom 1           | ""                 |  
+    updated values   | 1    | Ivan Vazov1              | Pod Igoto Tom 1           | " "                |  
+    
+
+
+    Scenario # 2: Unsuccessful update of a book into the system;
+
+
+ Test Case 5.  Unssucessful update of non existing book. 
+        Given  The user wants to update a non existing book into the system. (The book is not added/present into the system DB)
+          And  The user accesses the update book end point.
+          And  User fills the updated values for Book properties:Id(non existing), valid for Author, Title, Description.
+         When  submites the entered updated information.
+         Then  The book is not updated and saved into the LibraryManager App. The book is not present in the response, 
+               a certain response id error message appears.
+
+    Example:  | Id   | Author              | Title                  | Description     |   
+     values   | 1    | Ivan Vazov1         | Pod Igoto Tom 1        | Hard times      |  
+    
+
+ Test Case 6.  Unssucessful update of non existing book (invalid values for the id). 
+        Given  The user wants to update a non existing book into the system. (The book is not added/present into the system DB)
+          And  The user accesses the update book end point.
+          And  User fills the values for Book properties:Id(invalid value),  valid for Author, Title, Description.
+         When  submites the entered updated information.
+         Then  The book is not updated and saved into the LibraryManager App. The book is not present in the response, 
+               a certain response id error message appears.
+
+    Example:  | Id            | Author              | Title                  | Description     |   
+     values   | intMinValue   | Ivan Vazov1         | Pod Igoto Tom 1        | Hard times      |
+     values   | -1            | Ivan Vazov1         | Pod Igoto Tom 1        | Hard times      |  
+     values   |  0            | Ivan Vazov1         | Pod Igoto Tom 1        | Hard times      |  
+
+
+
+ Test Case 7.  Unssucessful update of book all fields are invalid except Description. 
+        Given  The user wants to update a book into the system entering all invalid fields for the book except Description.
+          And  The user accesses the update book end point.
+          And  User fills the values for Book properties:Id(invalid value),  invalid Author, invalid  Title, Description.
+         When  submites the entered updated information.
+         Then  The book is not updated and saved into the LibraryManager App. The book is not present in the response, 
+               a certain response id, Author and Title error messages appear.
+
+    Example:  | Id            | Author                          | Title                       | Description   |   
+     values   | intMinValue   | InvalidAuthor31CharsLength      | InvalidTitle101CharsLength  | Hard times    |
+     values   | -1            | InvalidAuthor31CharsLength      | InvalidTitle101CharsLength  | Hard times    |  
+     values   |  0            | InvalidAuthor31CharsLength      | InvalidTitle101CharsLength  | Hard times    | 
+     
+     InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1";
+     InvalidTitle101CharsLength = 
+               "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12";
+
+
+
+ Test Case 8.  Unssucessful update of book valid Id, Description, Invalid Author and invalid Title 
+        Given  The user wants to update a book into the system entering invalid Author and invalid Title.
+          And  The user accesses the update book end point.
+          And  User fills the values for Book properties:Id, invalid Author, invalid  Title, Description.
+         When  submites the entered updated information.
+         Then  The book is not updated and saved into the LibraryManager App. The book is not present in the response, 
+               a certain response Author and Title error messages appear.
+
+    Example:  | Id            | Author                          | Title                       | Description   |   
+     values   | 1             | InvalidAuthor31CharsLength      | InvalidTitle101CharsLength  | Hard times    |
+     values   | 2             | InvalidAuthor31CharsLength      | InvalidTitle101CharsLength  | Hard times    |  
+     values   | 3             | InvalidAuthor31CharsLength      | InvalidTitle101CharsLength  | Hard times    | 
+     
+     InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1";
+     InvalidTitle101CharsLength = 
+                   "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12";
+
+
+ Test Case 9.  Unssucessful update of book valid Invalid Author
+        Given  The user wants to update a book into the system entering invalid Author.
+          And  The user accesses the update book end point.
+          And  User fills the values for Book properties:Id, invalid Author, Title, Description.
+         When  submites the entered updated information.
+         Then  The book is not updated and saved into the LibraryManager App. The book is not present in the response, 
+               a certain response Author error messages appear.
+
+    Example:  | Id  | Author                       | Title            | Description     | 
+ old values   | 1   | TestAutor                    | TestTitle        | TestDescription |
+ new values   | 1   | null                         | Pod Igoto Tom 1  | Hard times      | 
+ new values   | 1   | ""                           | Pod Igoto Tom 1  | Hard times      |       
+ new values   | 1   | " "                          | Pod Igoto Tom 1  | Hard times      | 
+ new values   | 1   | InvalidAuthor31CharsLength   | Pod Igoto Tom 1  | Hard times      | 
+     
+     InvalidAuthor31CharsLength = "TestAuthorTestAuthorTestAuthor1";
+     
+
+Test Case 10.  Unssucessful update of book invalid Title
+        Given  The user wants to update a book into the system entering invalid Title.
+          And  The user accesses the update book end point.
+          And  User fills the values for Book properties:Id, Author, invalid Title, Description.
+         When  submites the entered updated information.
+         Then  The book is not updated and saved into the LibraryManager App. The book is not present in the response, 
+               a certain response Title error messages appear.
+
+    Example:  | Id   | Author        | Title                       | Description     | 
+ old values   | 1    | TestAutor     | TestTitle                   | TestDescription |
+ new values   | 1    | TestAutor     | ""                          | Hard times      | 
+ new values   | 1    | TestAutor     | " "                         | Hard times      |       
+ new values   | 1    | TestAutor     | null                        | Hard times      | 
+ new values   | 1    | TestAutor     | InvalidTitle101CharsLength  | Hard times      |   
+     
+   InvalidTitle101CharsLength = 
+            "Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 1Pod Igoto Tom nice 12";
+
+
+
+
+
+
+
+
+
+
+
+
+   
+   DELETE BOOK
+
+   Scenario # 1: Successful Deletion of a book from the system; 
+
+
+  Test Case 1. Successful Delete of an existing book
+        Given  The user wants to delete an existing book from the system by entering valid id.(Book and id are exisiting)
+          And  The user accesses the delete book end point.
+          And  User fills the desired value for Book properties:Id.
+         When  submites the entered delition information.
+         Then  The book is deleted from the LibraryManager App. The book is not present any more in the response.                
+
+    Example:  | Id   | Author        | Title               | Description     | 
+              | 1    | TestAutor     | TestTitle           | TestDescription |
+              After delition the current book is deleted from the system and it is not present into the response.
+     
+   
+ Test Case 2.  Successful Delete of book when book is first added and then updated
+        Given  The user wants to delete a book that was first added and then updated(steps alreedy described, 
+               we jump directy to delition).
+          And  The user accesses the delete book end point.
+          And  User fills the desired value for Book properties:Id.
+         When  submites the entered delition information.
+         Then  The book is deleted from the LibraryManager App. The book is not present any more in the response.                
+
+    Example:  | Id   | Author        | Title               | Description     | 
+              | 1    | TestAutor     | TestTitle           | TestDescription |
+              | 2    | Ivan Vazov1   | Pod Igoto Tom 1     | Hard times      |
+              
+              After delition the book is deleted from the system and it is not present into the response.
+
+
+ Test Case 3.  Successful Deletetion of two books.(books are added firstly and are existing, ids are valid)
+        Given  The user wants to delete two books that were first added.(steps for adding books are already described) 
+               we jump directy to delition).
+          And  The user accesses the delete book end point.
+          And  User fills the desired value for Book properties:Id.
+         When  submites the entered delition information.
+         Then  Each book is deleted from the LibraryManager App. and each deleted book is not present in the response.                
+
+    Example:  | Id   | Author        | Title               | Description     | 
+              | 1    | TestAutor     | TestTitle           | TestDescription |
+              | 2    | Ivan Vazov1   | Pod Igoto Tom 1     | Hard times      |
+              
+              Each deleted book is not present in the response any more.
+
+ Test Case 4.  Successful Deletetion of two books when books are first added and then updated.
+        Given  The user wants to delete two books that were first added and tehn updated.(steps for adding and updating books
+               are already described and we jump directy to delition).
+          And  The user accesses the delete book end point.
+          And  User fills the desired value for Book properties:Id.
+         When  submites the entered delition information.
+         Then  Each book is deleted from the LibraryManager App. and each deleted book is not present in the response.                
+
+    Example:  | Id   | Author        | Title               | Description     | 
+   old value  | 1    | TestAutor     | TestTitle           | TestDescription |
+   new value  | 1    | Ivan Vazov1   | Pod Igoto Tom 1     | Hard times      |
+   old value  | 2    | TestAutor     | TestTitle           | TestDescription |
+   new value  | 2    | Ivan Vazov1   | Pod Igoto Tom 1     | Hard times      |
+              
+              Each deleted book is not present in the response any more.
+
+
+Scenario # 2: Unsuccessful Deletion of a book from the system; 
+
+  Test Case 5. Deletetion of book when id is not existing or invalid.
+        Given  The user wants to delete book by id that is not existing or not valid               
+          And  The user accesses the delete book end point.
+          And  User fills the desired value for Book properties:Id.
+         When  submites the entered delition information.
+         Then  No book is deleted from the LibraryManager App. In the response is present respective id error message.                
+
+    Example:  | Id            |       
+       value  | int.MinValue  | 
+       value  | 10            |
+       value  | 0             | 
+       value  | 1             | 
+
+  
+
+
+     
+    
